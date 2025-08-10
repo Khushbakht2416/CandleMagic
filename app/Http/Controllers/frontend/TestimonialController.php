@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Controllers\frontend;
+
+use App\Http\Controllers\Controller;
+use App\Models\frontend\TestimonialModel;
+use Illuminate\Http\Request;
+use Gloudemans\Shoppingcart\Facades\Cart;
+class TestimonialController extends Controller
+{
+    public function index()
+    {
+        $result = TestimonialModel::where('status', 1)->get();
+        $cartItems = Cart::content();
+        $subtotal = $cartItems->sum(function ($item) {
+            return $item->price * $item->qty;
+        });
+        $shippingCost = 20.00;
+        $total = $subtotal + $shippingCost;
+        return view('frontend.about', [
+            'cartItems' => $cartItems,
+            'subtotal' => number_format($subtotal, 2),
+            'total' => number_format($total, 2),
+            'shippingCost' => number_format($shippingCost, 2),
+            'result' => $result,
+        ]);
+    }
+
+}
